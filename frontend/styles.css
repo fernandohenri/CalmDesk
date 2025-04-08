@@ -1,0 +1,381 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Estilo base para todas as telas */
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    display: none; /* Todas as telas começam ocultas */
+    position: absolute; /* Garante que as telas se sobreponham corretamente */
+}
+
+/* Tela inicial */
+#telaInicial {
+    opacity: 1;
+    transform: translateY(0);
+    display: block; /* A tela inicial é exibida por padrão */
+}
+
+#telaInicial.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+/* Tela de sentimentos */
+#telaSentimentos {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaSentimentos.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+/* Tela feliz */
+#telaFeliz {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaFeliz.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+/* Tela de animação */
+#telaAnimacao {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaAnimacao.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+/* Tela de raiva */
+#telaRaiva {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaRaiva.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+/* Tela de feedback */
+#telaFeedback {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaFeedback.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+/* Tela motivacional */
+#telaMotivacional {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaMotivacional.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+/* Estilo do card (comum a todas as telas) */
+.card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+}
+
+/* Estilos para títulos e parágrafos */
+h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 25px;
+    color: #444;
+}
+
+p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* Estilos para botões */
+button {
+    background: #6c5ce7;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 20px;
+}
+
+button:hover {
+    background: #5a4fcf;
+}
+
+/* Estilos para os emojis */
+.emoji-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.emoji-option {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.emoji {
+    font-size: 64px;
+    margin-bottom: 10px;
+}
+
+.emoji-text {
+    font-size: 14px;
+    color: #666;
+}
+
+.emoji-option:hover {
+    transform: scale(1.1);
+}
+
+/* Estilos para o GIF */
+.meme {
+    max-width: 150px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Estilos para a tela de animação */
+#telaAnimacao .frase {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2d3436;
+    margin-top: 20px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para a tela de raiva */
+.respira-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.bola {
+    width: 100px;
+    height: 100px;
+    background-color: #6c5ce7;
+    border-radius: 50%;
+    transition: all 1s ease;
+}
+
+#instrucao {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #444;
+}
+
+/* Estilos para a tela de feedback */
+#telaFeedback button {
+    margin: 10px;
+}
+
+/* Estilos para a tela motivacional */
+.frase-motivacional {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2d3436;
+    margin-top: 20px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Estilos para a tela de configuração do horário de almoço */
+#telaConfigAlmoco {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaConfigAlmoco.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+#telaConfigAlmoco label {
+    display: block;
+    margin-top: 15px;
+    font-size: 16px;
+    color: #444;
+}
+
+#telaConfigAlmoco input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+#telaConfigAlmoco button {
+    margin-top: 20px;
+}
+
+/* Estilos para a tela do cronômetro do almoço */
+#telaCronometroAlmoco {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaCronometroAlmoco.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+#tempoRestante {
+    font-size: 32px;
+    font-weight: bold;
+    color: #6c5ce7;
+    margin-top: 20px;
+}
+/* Estilos para as novas telas */
+#telaConfigSaida {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaConfigSaida.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+#telaPreSaida {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaPreSaida.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+#telaFinalizacao {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+#telaFinalizacao.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+}
+
+/* Estilos específicos */
+#tempoRestantePreSaida {
+    font-size: 32px;
+    font-weight: bold;
+    color: #6c5ce7;
+    margin: 20px 0;
+}
+
+#contagemRegressiva {
+    font-size: 18px;
+    color: #666;
+    margin: 20px 0;
+}
+
+.btn-secundario {
+    background: #a5b1c2;
+    margin-top: 10px;
+}
+
+.btn-secundario:hover {
+    background: #778ca3;
+}
+
+#fecharAgora {
+    background: #e74c3c;
+}
+
+#fecharAgora:hover {
+    background: #c0392b;
+}

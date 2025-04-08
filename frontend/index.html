@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalmDesk</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body.fechamento-desabilitado #webview-titlebar-close {
+            pointer-events: none !important;
+            opacity: 0.5 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Primeira tela -->
+    <div id="telaInicial" class="container">
+        <div class="card">
+            <h1>Welcome to CalmDesk</h1>
+            <p>Gerencie seu bem-estar no trabalho com lembretes de pausas, hidratação e exercícios de respiração.</p>
+            <button id="comecarDia">Começar o Dia</button>
+        </div>
+    </div>
+
+    <!-- Segunda tela -->
+    <div id="telaSentimentos" class="container">
+        <div class="card">
+            <h1>Como você está se sentindo hoje?</h1>
+            <div class="emoji-container">
+                <div class="emoji-option" data-value="feliz">
+                    <span class="emoji">😊</span>
+                    <span class="emoji-text">Feliz</span>
+                </div>
+                <div class="emoji-option" data-value="neutro">
+                    <span class="emoji">😐</span>
+                    <span class="emoji-text">Neutro</span>
+                </div>
+                <div class="emoji-option" data-value="raiva">
+                    <span class="emoji">😠</span>
+                    <span class="emoji-text">Raiva</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terceira tela (GIF e mensagem) -->
+    <div id="telaFeliz" class="container">
+        <div class="card">
+            <h1>Desejamos um bom trabalho!</h1>
+            <img src="" alt="Meme Feliz" class="meme">
+        </div>
+    </div>
+
+    <!-- Quarta tela (Frase de animação) -->
+    <div id="telaAnimacao" class="container">
+        <div class="card">
+            <h1>Vamos começar o dia com energia!</h1>
+            <p class="frase"></p> <!-- Aqui a frase será exibida -->
+        </div>
+    </div>
+
+    <!-- Quinta tela (Exercício de Respiração) -->
+    <div id="telaRaiva" class="container">
+        <div class="card">
+            <h1>Exercício de Respiração</h1>
+            <p>Vamos ajudar você a se acalmar. Siga as instruções abaixo:</p>
+            <div class="respira-container">
+                <div class="bola" id="bola"></div>
+                <p id="instrucao">Aspire por 4 segundos...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sexta tela (Feedback após exercício) -->
+    <div id="telaFeedback" class="container">
+        <div class="card">
+            <h1>Como você está se sentindo agora?</h1>
+            <button id="melhor">Estou melhor</button>
+            <button id="pior">Ainda não</button>
+        </div>
+    </div>
+
+    <!-- Sétima tela (Frase Motivacional) -->
+    <div id="telaMotivacional" class="container">
+        <div class="card">
+            <h1>Você é incrível!</h1>
+            <p class="frase-motivacional">Continue assim, você está no caminho certo!</p>
+        </div>
+    </div>
+
+        <!-- Oitava tela (Configuração do Horário de Almoço) -->
+    <!-- Tela de Configuração do Horário de Almoço -->
+    <div id="telaConfigAlmoco" class="container">
+        <div class="card">
+            <h1>Configurar Horário de Almoço</h1>
+            <p>Defina o horário de início e a duração do almoço:</p>
+            <label for="horarioInicio">Horário de Início:</label>
+            <input type="time" id="horarioInicio" required>
+            <label for="duracaoAlmoco">Duração (minutos):</label>
+            <input type="number" id="duracaoAlmoco" min="1" required>
+            <button id="salvarHorarioAlmoco">Salvar</button>
+        </div>
+    </div>
+
+    <!-- Tela de Pré-Almoço -->
+    <div id="telaPreAlmoco" class="container">
+        <div class="card">
+            <h1>Tempo Restante para o Almoço</h1>
+            <p id="tempoRestantePreAlmoco">00:00</p>
+            <button id="iniciarAlmoco" style="display: none;">Iniciar Almoço</button>
+        </div>
+    </div>
+
+    <!-- Tela de Cronômetro do Almoço -->
+    <div id="telaCronometroAlmoco" class="container">
+        <div class="card">
+            <h1>Cronômetro do Almoço</h1>
+            <p>Tempo restante:</p>
+            <p id="tempoRestante">00:00</p>
+            <button id="voltarDoAlmoco" disabled>Voltar do Almoço</button>
+        </div>
+    </div>
+        <!-- Tela de Configuração do Horário de Saída -->
+        <div id="telaConfigSaida" class="container">
+            <div class="card">
+                <h1>Configurar Horário de Saída</h1>
+                <p>Defina o horário que você planeja encerrar seu trabalho:</p>
+                <label for="horarioSaida">Horário de Saída:</label>
+                <input type="time" id="horarioSaida" required>
+                <button id="salvarHorarioSaida">Salvar</button>
+                <button id="sairAntecipadamente" class="btn-secundario">Sair Antecipadamente</button>
+            </div>
+        </div>
+    
+        <!-- Tela de Pré-Saída -->
+        <div id="telaPreSaida" class="container">
+            <div class="card">
+                <h1>Tempo Restante para a Saída</h1>
+                <p id="tempoRestantePreSaida">00:00:00</p>
+                <button id="finalizarDia" style="display: none;">Finalizar Dia</button>
+            </div>
+        </div>
+    
+        <!-- Tela de Finalização -->
+        <div id="telaFinalizacao" class="container">
+            <div class="card">
+                <h1>Mais um dia finalizado!</h1>
+                <p>Parabéns pelo seu trabalho! Bom descanso!</p>
+                <p id="contagemRegressiva">Fechando em 10 segundos...</p>
+                <button id="fecharAgora">Fechar Agora</button>
+            </div>
+        </div>
+    <script src="script.js"></script>
+</body>
+</html>
