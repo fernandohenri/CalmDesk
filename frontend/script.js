@@ -1,3 +1,16 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Força o pywebview a usar nosso controle
+    window.addEventListener('beforeunload', (e) => {
+        if (!document.body.classList.contains('fechamento-permitido')) {
+            e.preventDefault();
+            window.pywebview.api.minimizar_para_bandeja();
+        }
+    });
+});
+
+// Variáveis globais
+let fechamentoPermitido = false;
+
 // Credenciais da API Imgflip
 const USERNAME = 'bearod';
 const PASSWORD = 'Bea@2025';
@@ -171,24 +184,26 @@ function salvarHorarioAlmoco() {
         return;
     }
 
+    // Configura o horário
     horarioInicioAlmoco = new Date();
     const [hora, minuto] = horarioInicio.split(':');
     horarioInicioAlmoco.setHours(hora, minuto, 0, 0);
 
+    // Verifica se já faltam ≤5 minutos
+    const agora = new Date();
+    const tempoRestante = horarioInicioAlmoco.getTime() - agora.getTime();
+    const minutosRestantes = Math.floor(tempoRestante / (1000 * 60));
+
+    if (tempoRestante <= 5 * 60 * 1000 && tempoRestante > 0) {
+        window.pywebview.api.notificar(
+            `Seu almoço começa em ${minutosRestantes} minuto${minutosRestantes !== 1 ? 's' : ''}!`
+        );
+    }
+
+    // Restante da função (iniciar cronômetro, etc.)
     duracaoAlmoco = duracao * 60 * 1000;
-
-    // Resetar variáveis de notificação
-    notificacao5MinExibida = false;
-    notificacaoAlmocoTerminadoExibida = false;
-
-    // Mostrar a tela do cronômetro de pré-almoço
     document.getElementById('telaConfigAlmoco').classList.remove('show');
     document.getElementById('telaPreAlmoco').style.display = 'block';
-    setTimeout(() => {
-        document.getElementById('telaPreAlmoco').classList.add('show');
-    }, 10);
-
-    // Iniciar o cronômetro de pré-almoço
     intervaloPreAlmoco = setInterval(atualizarCronometroPreAlmoco, 1000);
 }
 
@@ -200,21 +215,14 @@ function atualizarCronometroPreAlmoco() {
     if (tempoRestante <= 0) {
         clearInterval(intervaloPreAlmoco);
         document.getElementById('iniciarAlmoco').style.display = 'block';
-        notificacao5MinExibida = false;
         return;
     }
 
-    const minutos = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+    // Apenas atualiza o cronômetro (sem alertas)
+    const minutos = Math.floor(tempoRestante / (1000 * 60));
     const segundos = Math.floor((tempoRestante % (1000 * 60)) / 1000);
-
-    document.getElementById('tempoRestantePreAlmoco').textContent =
+    document.getElementById('tempoRestantePreAlmoco').textContent = 
         `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
-
-    // Exibir notificação quando faltar 5 minutos (apenas uma vez)
-    if (tempoRestante <= 5 * 60 * 1000 && !notificacao5MinExibida) {
-        window.pywebview.api.notificar("Faltam 5 minutos para o seu almoço!");
-        notificacao5MinExibida = true;
-    }
 }
 
 // Função para iniciar o cronômetro do almoço
@@ -273,36 +281,62 @@ function mostrarTelaConfigSaida() {
 // Função para salvar o horário de saída
 function salvarHorarioSaida() {
     const horario = document.getElementById('horarioSaida').value;
-
+    
     if (!horario) {
         alert("Por favor, preencha o horário de saída.");
         return;
     }
 
-    horarioSaida = new Date();
-    const [hora, minuto] = horario.split(':');
+    // Configura o horário com tratamento de timezone
+    const agora = new Date();
+    const [hora, minuto] = horario.split(':').map(Number);
+    horarioSaida = new Date(agora);
     horarioSaida.setHours(hora, minuto, 0, 0);
+    
+    // Ajuste para horário futuro se já passou no dia
+    if (horarioSaida < agora) {
+        horarioSaida.setDate(horarioSaida.getDate() + 1);
+    }
 
-    notificacao5MinSaidaExibida = false;
+    // Verifica se já faltam ≤5 minutos
+    const tempoRestante = horarioSaida.getTime() - agora.getTime();
+    const minutosRestantes = Math.floor(tempoRestante / (1000 * 60));
 
+    if (tempoRestante <= 5 * 60 * 1000 && tempoRestante > 0) {
+        window.pywebview.api.notificar(
+            `Sua saída será em ${minutosRestantes} minuto${minutosRestantes !== 1 ? 's' : ''}!`
+        );
+        alertaSaidaExibido = true;
+    }
+
+    // Transição para tela de pré-saída
     document.getElementById('telaConfigSaida').classList.remove('show');
-    document.getElementById('telaPreSaida').style.display = 'block';
     setTimeout(() => {
-        document.getElementById('telaPreSaida').classList.add('show');
-    }, 10);
-
-    intervaloSaida = setInterval(atualizarCronometroPreSaida, 1000);
+        document.getElementById('telaConfigSaida').style.display = 'none';
+        document.getElementById('telaPreSaida').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('telaPreSaida').classList.add('show');
+            
+            // Inicia o cronômetro (garante que qualquer intervalo anterior seja limpo)
+            if (intervaloSaida) clearInterval(intervaloSaida);
+            intervaloSaida = setInterval(atualizarCronometroPreSaida, 1000);
+        }, 10);
+    }, 500);
 }
-
 // Função para atualizar o cronômetro de pré-saída
+let alertaSaidaExibido = false; // Variável de controle
+
+
 function atualizarCronometroPreSaida() {
+    if (!horarioSaida) return;
+
     const agora = new Date();
     const tempoRestante = horarioSaida.getTime() - agora.getTime();
 
     if (tempoRestante <= 0) {
         clearInterval(intervaloSaida);
         document.getElementById('finalizarDia').style.display = 'block';
-        notificacao5MinSaidaExibida = false;
+        document.getElementById('tempoRestantePreSaida').textContent = "00:00:00";
         return;
     }
 
@@ -313,71 +347,44 @@ function atualizarCronometroPreSaida() {
     document.getElementById('tempoRestantePreSaida').textContent =
         `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
 
-    if (tempoRestante <= 5 * 60 * 1000 && !notificacao5MinSaidaExibida) {
-        window.pywebview.api.notificar("Faltam 5 minutos para o seu horário de saída!");
-        notificacao5MinSaidaExibida = true;
+    // Alerta único quando faltam ≤5 minutos
+    if (tempoRestante <= 5 * 60 * 1000 && !alertaSaidaExibido) {
+        const msg = minutos > 0 
+            ? `Faltam ${minutos} minuto${minutos !== 1 ? 's' : ''} para sua saída!` 
+            : `Faltam ${segundos} segundo${segundos !== 1 ? 's' : ''} para sua saída!`;
+        
+        window.pywebview.api.notificar(msg);
+        alertaSaidaExibido = true;
     }
 }
-let fechamentoPermitido = false;
 
-// Função para finalizar o dia
 function finalizarDia() {
-    fechamentoPermitido = true;
-    window.pywebview.api.habilitar_fechamento();
+    // 1. Habilita o fechamento real do programa
+    window.pywebview.api.permitir_fechamento(true);
+    
+    // 2. Para qualquer cronômetro ativo
     clearInterval(intervaloSaida);
     
-    document.getElementById('telaPreSaida').classList.remove('show');
-    document.getElementById('telaFinalizacao').style.display = 'block';
-    setTimeout(() => {
-        document.getElementById('telaFinalizacao').classList.add('show');
-    }, 10);
-
-    iniciarContagemRegressiva();
-}
-
-// Função para sair antecipadamente
-function sairAntecipadamente() {
-    if (confirm("Deseja realmente sair antes do horário configurado?")) {
-        clearInterval(intervaloSaida);
-        finalizarDia();
-    }
-}
-
-// Função para iniciar contagem regressiva
-function iniciarContagemRegressiva() {
-    let contador = 10;
-    document.getElementById('contagemRegressiva').textContent = 
-        `Fechando em ${contador} segundos...`;
+    // 3. Mostra a tela final
+    const telaPreSaida = document.getElementById('telaPreSaida');
+    const telaFinalizacao = document.getElementById('telaFinalizacao');
     
-    intervaloFinalizacao = setInterval(() => {
-        contador--;
-        document.getElementById('contagemRegressiva').textContent = 
-            `Fechando em ${contador} segundos...`;
-        
-        if (contador <= 0) {
-            clearInterval(intervaloFinalizacao);
-            window.pywebview.api.fechar_programa();
-        }
-    }, 1000);
-}
-// Bloqueia fechamento acidental
-window.addEventListener('beforeunload', (e) => {
-    if (!fechamentoPermitido) {
-        e.preventDefault();
-        window.pywebview.api.notificar("Use o botão 'Minimizar para bandeja'!");
-    }
-});
-// Função para fechar imediatamente
-function fecharAgora() {
-    clearInterval(intervaloFinalizacao);
-    window.pywebview.api.fechar_programa();
+    telaPreSaida.style.display = 'none';
+    telaPreSaida.classList.remove('show');
+    
+    telaFinalizacao.style.display = 'block';
+    telaFinalizacao.classList.add('show');
+    
+    // 4. Fecha o programa após 2 segundos
+    setTimeout(() => {
+        window.pywebview.api.fechar_programa();
+    }, 2000);
 }
 
 // Event listeners
 document.getElementById('salvarHorarioSaida').addEventListener('click', salvarHorarioSaida);
 document.getElementById('finalizarDia').addEventListener('click', finalizarDia);
 document.getElementById('sairAntecipadamente').addEventListener('click', sairAntecipadamente);
-document.getElementById('fecharAgora').addEventListener('click', fecharAgora);
 
 // Modificação da função voltarDoAlmoco
 function voltarDoAlmoco() {
@@ -427,12 +434,17 @@ emojiOptions.forEach(option => {
                     telaFeliz.style.display = 'block';
                     setTimeout(() => {
                         telaFeliz.classList.add('show');
+                        // Adicione este setTimeout para esconder o meme após 5 segundos
                         setTimeout(() => {
-                            mostrarTelaConfigAlmoco();
-                        }, 5000);
-                    }, 10);
-                }
-            }, 500);
+                            telaFeliz.classList.remove('show');
+                            setTimeout(() => {
+                                telaFeliz.style.display = 'none';
+                                mostrarTelaConfigAlmoco(); // Vai para a tela de config almoço
+                            }, 500); // Tempo da animação de saída
+                        }, 5000); // Tempo que o meme fica visível
+                        }, 10);
+                        }
+                        }, 500);
         } else if (feeling === 'neutro') {
             const telaSentimentos = document.getElementById('telaSentimentos');
             telaSentimentos.classList.add('hide');
@@ -456,7 +468,6 @@ emojiOptions.forEach(option => {
         }
     });
 });
-
 // Botão "Minimizar para a bandeja" na tela de animação
 document.getElementById('minimizarAnimacao').addEventListener('click', () => {
     window.pywebview.api.minimizar_para_bandeja();
