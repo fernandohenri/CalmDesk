@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Força o pywebview a usar nosso controle
     window.addEventListener('beforeunload', (e) => {
         if (!document.body.classList.contains('fechamento-permitido')) {
             e.preventDefault();
             window.pywebview.api.minimizar_para_bandeja();
+            return "Deseja realmente sair? O aplicativo será minimizado para a bandeja.";
         }
+        // Quando fechamento-permitido estiver ativo, não faz nada e permite o fechamento
     });
 });
 
@@ -360,7 +361,7 @@ function atualizarCronometroPreSaida() {
 
 function finalizarDia() {
     // 1. Habilita o fechamento real do programa
-    window.pywebview.api.permitir_fechamento(true);
+    window.pywebview.api.marcar_fechamento_permitido();
     
     // 2. Para qualquer cronômetro ativo
     clearInterval(intervaloSaida);
@@ -373,12 +374,14 @@ function finalizarDia() {
     telaPreSaida.classList.remove('show');
     
     telaFinalizacao.style.display = 'block';
-    telaFinalizacao.classList.add('show');
-    
-    // 4. Fecha o programa após 2 segundos
     setTimeout(() => {
-        window.pywebview.api.fechar_programa();
-    }, 2000);
+        telaFinalizacao.classList.add('show');
+        
+        // 4. Fecha o programa após 2 segundos
+        setTimeout(() => {
+            window.pywebview.api.fechar_programa();
+        }, 2000);
+    }, 10);
 }
 
 // Event listeners
