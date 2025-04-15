@@ -1,39 +1,34 @@
-name: Build macOS Application  # Nome do workflow
+name: Build macOS Application
 
 on:
   push:
-    branches: [ "main" ]  # Executa ao fazer push na branch main
-  workflow_dispatch:       # Permite acionar manualmente no GitHub
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build-macos:
-    runs-on: macos-latest  # Usa um servidor macOS fornecido pelo GitHub
+    runs-on: macos-latest
 
     steps:
-      # 1. Baixa o código do repositório
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Atualizado para v4
 
-      # 2. Configura Python
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5  # Atualizado para v5
         with:
-          python-version: "3.9"  # Versão compatível com seu projeto
+          python-version: "3.9"
 
-      # 3. Instala dependências
       - name: Install dependencies
         run: |
           pip install pyinstaller
-          pip install -r requirements.txt  # Se você tiver este arquivo
+          [ -f requirements.txt ] && pip install -r requirements.txt
 
-      # 4. Executa o PyInstaller
       - name: Build .app bundle
         run: |
-          pyinstaller CalmDesk_mac.spec  # Usa seu arquivo de configuração
+          pyinstaller CalmDesk_mac.spec
 
-      # 5. Disponibiliza o app para download
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Atualizado para v4
         with:
           name: CalmDesk-macOS
-          path: dist/CalmDesk.app  # Caminho do aplicativo gerado
+          path: dist/CalmDesk.app
