@@ -12,10 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Variáveis globais
 let fechamentoPermitido = false;
 
-// Credenciais da API Imgflip
-const USERNAME = 'bearod';
-const PASSWORD = 'Bea@2025';
-
 // Lista de frases de animação
 const frasesAnimacao = [
     "Hoje é um novo dia para brilhar! 💪",
@@ -33,48 +29,14 @@ const frasesAnimacao = [
 // Variáveis de controle para notificações
 let notificacao5MinExibida = false;
 let notificacaoAlmocoTerminadoExibida = false;
+let notificacaoSaidaTerminadoExibida = false;
+let notificacaoHoraAlmocoExibida = false;
+
 
 // Função para selecionar uma frase aleatória
 function selecionarFraseAleatoria() {
     const indice = Math.floor(Math.random() * frasesAnimacao.length);
     return frasesAnimacao[indice];
-}
-
-// Função para gerar um meme
-async function gerar_meme() {
-    const template_id = '181913649';
-    const texto_superior = "Usar APIs";
-    const texto_inferior = "Criar memes automaticamente";
-
-    const url = 'https://api.imgflip.com/caption_image';
-    const params = new URLSearchParams({
-        template_id: template_id,
-        username: USERNAME,
-        password: PASSWORD,
-        text0: texto_superior,
-        text1: texto_inferior
-    });
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: params
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            return data.data.url;
-        } else {
-            console.error("Erro na API:", data.error_message);
-            return null;
-        }
-    } catch (error) {
-        console.error("Erro ao gerar o meme:", error);
-        return null;
-    }
 }
 
 // Variáveis globais para o exercício de respiração
@@ -190,8 +152,13 @@ function salvarHorarioAlmoco() {
     const [hora, minuto] = horarioInicio.split(':');
     horarioInicioAlmoco.setHours(hora, minuto, 0, 0);
 
-    // Verifica se já faltam ≤5 minutos
+        // Verifica se o horário é menor que a hora atual
     const agora = new Date();
+    if (horarioInicioAlmoco <= agora) {
+        alert("O horário de início do almoço não pode ser menor ou igual à hora atual.");
+        return; // Impede a continuação da função
+    }
+    // Verifica se já faltam ≤5 minutos
     const tempoRestante = horarioInicioAlmoco.getTime() - agora.getTime();
     const minutosRestantes = Math.floor(tempoRestante / (1000 * 60));
 
@@ -200,7 +167,16 @@ function salvarHorarioAlmoco() {
             `Seu almoço começa em ${minutosRestantes} minuto${minutosRestantes !== 1 ? 's' : ''}!`
         );
     }
-
+    if (tempoRestante <= 0) {
+        clearInterval(intervaloAlmoco);
+        document.getElementById('tempoRestante').textContent = "00:00";
+        
+        if (!notificacaoHoraAlmocoExibida) {
+            window.pywebview.api.notificar("Hora de almoçar!");
+            notificacaoHoraAlmocoExibida = true;
+        }
+        return;
+    }
     // Restante da função (iniciar cronômetro, etc.)
     duracaoAlmoco = duracao * 60 * 1000;
     document.getElementById('telaConfigAlmoco').classList.remove('show');
@@ -216,6 +192,12 @@ function atualizarCronometroPreAlmoco() {
     if (tempoRestante <= 0) {
         clearInterval(intervaloPreAlmoco);
         document.getElementById('iniciarAlmoco').style.display = 'block';
+        
+        // Notificação quando ZERAR (hora de almoçar)
+        if (!notificacaoHoraAlmocoExibida) {
+            window.pywebview.api.notificar("Hora de almoçar! 🍽️");
+            notificacaoHoraAlmocoExibida = true;
+        }
         return;
     }
 
@@ -227,17 +209,24 @@ function atualizarCronometroPreAlmoco() {
 }
 
 // Função para iniciar o cronômetro do almoço
+// Função para iniciar o cronômetro do almoço (só quando o botão é clicado)
 function iniciarCronometroAlmoco() {
+    // 1. Esconde o botão "Iniciar Almoço"
     document.getElementById('iniciarAlmoco').style.display = 'none';
-
-    // Mostrar a tela do cronômetro do almoço
+    
+    // 2. Atualiza o horário de início para AGORA (momento do clique)
+    horarioInicioAlmoco = new Date(); // <- Isso é o mais importante!
+    
+    // 3. Mostra a tela do cronômetro
     document.getElementById('telaPreAlmoco').classList.remove('show');
     document.getElementById('telaCronometroAlmoco').style.display = 'block';
+    
     setTimeout(() => {
         document.getElementById('telaCronometroAlmoco').classList.add('show');
     }, 10);
-
-    // Iniciar o cronômetro de almoço
+    
+    // 4. Inicia o cronômetro (se já existir um, limpa antes)
+    if (intervaloAlmoco) clearInterval(intervaloAlmoco);
     intervaloAlmoco = setInterval(atualizarCronometroAlmoco, 1000);
 }
 
@@ -245,25 +234,33 @@ function iniciarCronometroAlmoco() {
 function atualizarCronometroAlmoco() {
     const agora = new Date();
     const tempoRestante = horarioInicioAlmoco.getTime() + duracaoAlmoco - agora.getTime();
+    const voltarBtn = document.getElementById('voltarDoAlmoco');
 
     if (tempoRestante <= 0) {
         clearInterval(intervaloAlmoco);
         document.getElementById('tempoRestante').textContent = "00:00";
+        
+        // Habilita o botão e aplica o estilo azul
+        voltarBtn.disabled = false;
+        voltarBtn.classList.add('ativo'); // <- Adiciona a classe "ativo"
+
         if (!notificacaoAlmocoTerminadoExibida) {
             window.pywebview.api.notificar("Horário de almoço terminado!");
             notificacaoAlmocoTerminadoExibida = true;
         }
-        document.getElementById('voltarDoAlmoco').disabled = false;
         return;
     }
 
+    // Mantém o botão desativado e cinza enquanto o tempo não zerar
+    voltarBtn.disabled = true;
+    voltarBtn.classList.remove('ativo'); // <- Remove a classe "ativo"
+
+    // Atualiza o cronômetro
     const minutos = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
     const segundos = Math.floor((tempoRestante % (1000 * 60)) / 1000);
-
     document.getElementById('tempoRestante').textContent =
         `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
 }
-
 // Variáveis globais para o cronômetro de saída
 let horarioSaida;
 let intervaloSaida;
@@ -295,8 +292,9 @@ function salvarHorarioSaida() {
     horarioSaida.setHours(hora, minuto, 0, 0);
     
     // Ajuste para horário futuro se já passou no dia
-    if (horarioSaida < agora) {
-        horarioSaida.setDate(horarioSaida.getDate() + 1);
+    if (horarioSaida <= agora) {
+        alert("O horário de saida não pode ser menor ou igual à hora atual.");
+        return; // Impede a continuação da função
     }
 
     // Verifica se já faltam ≤5 minutos
@@ -338,6 +336,25 @@ function atualizarCronometroPreSaida() {
         clearInterval(intervaloSaida);
         document.getElementById('finalizarDia').style.display = 'block';
         document.getElementById('tempoRestantePreSaida').textContent = "00:00:00";
+        if (!notificacaoSaidaTerminadoExibida) {
+            window.pywebview.api.notificar("Seu expediente acabou");
+            notificacaoSaidaTerminadoExibida = true;
+        }
+        return;
+    }
+
+    if (tempoRestante <= 0) {
+        clearInterval(intervaloAlmoco);
+        document.getElementById('tempoRestante').textContent = "00:00";
+        
+        // Habilita o botão e aplica o estilo azul
+        voltarBtn.disabled = false;
+        voltarBtn.classList.add('ativo'); // <- Adiciona a classe "ativo"
+
+        if (!notificacaoSaidaTerminadoExibida) {
+            window.pywebview.api.notificar("Seu expediente Acabou");
+            notificacaoSaidaTerminadoExibida = true;
+        }
         return;
     }
 
@@ -387,7 +404,6 @@ function finalizarDia() {
 // Event listeners
 document.getElementById('salvarHorarioSaida').addEventListener('click', salvarHorarioSaida);
 document.getElementById('finalizarDia').addEventListener('click', finalizarDia);
-document.getElementById('sairAntecipadamente').addEventListener('click', sairAntecipadamente);
 
 // Modificação da função voltarDoAlmoco
 function voltarDoAlmoco() {
@@ -429,25 +445,23 @@ emojiOptions.forEach(option => {
             setTimeout(async () => {
                 telaSentimentos.style.display = 'none';
 
-                const url_meme = await gerar_meme();
-                if (url_meme) {
-                    const telaFeliz = document.getElementById('telaFeliz');
-                    const memeImg = telaFeliz.querySelector('.meme');
-                    memeImg.src = url_meme;
-                    telaFeliz.style.display = 'block';
+                const telaFeliz = document.getElementById('telaFeliz');
+                const memeImg = telaFeliz.querySelector('.meme');
+                memeImg.src = 'images/meme.jpg'; 
+                telaFeliz.style.display = 'block';
+                setTimeout(() => {
+                    telaFeliz.classList.add('show');
+                    // Adicione este setTimeout para esconder o meme após 5 segundos
                     setTimeout(() => {
-                        telaFeliz.classList.add('show');
-                        // Adicione este setTimeout para esconder o meme após 5 segundos
+                        telaFeliz.classList.remove('show');
                         setTimeout(() => {
-                            telaFeliz.classList.remove('show');
-                            setTimeout(() => {
-                                telaFeliz.style.display = 'none';
-                                mostrarTelaConfigAlmoco(); // Vai para a tela de config almoço
-                            }, 500); // Tempo da animação de saída
-                        }, 5000); // Tempo que o meme fica visível
-                        }, 10);
-                        }
-                        }, 500);
+                            telaFeliz.style.display = 'none';
+                            mostrarTelaConfigAlmoco(); // Vai para a tela de config almoço
+                        }, 500); // Tempo da animação de saída
+                    }, 5000); // Tempo que o meme fica visível
+                    }, 10);
+                    }
+                    , 500);
         } else if (feeling === 'neutro') {
             const telaSentimentos = document.getElementById('telaSentimentos');
             telaSentimentos.classList.add('hide');

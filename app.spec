@@ -7,9 +7,7 @@ added_files = [
     ('frontend/index.html', 'frontend'),
     ('frontend/script.js', 'frontend'),
     ('frontend/styles.css', 'frontend'),
-    ('images/raiva.png', 'images'),
-    ('images/neutro.png', 'images'),
-    ('images/feliz.png', 'images'),
+    ('frontend/images/meme.jpg', 'frontend/images'), 
     ('icon.ico', '.')
 ]
 

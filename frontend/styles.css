@@ -194,9 +194,11 @@ button:hover {
 
 /* Estilos para o GIF */
 .meme {
-    max-width: 150px;
-    border-radius: 5px;
-    margin-top: 10px;
+    max-width: 50vw;    /* 90% da largura da tela */
+    max-height: 50vh;   /* 70% da altura da tela */
+    object-fit: contain; /* Mantém proporções sem distorcer */
+    display: block;
+    margin: 0 auto;     /* Centraliza */
 }
 
 /* Estilos para a tela de animação */
@@ -389,15 +391,24 @@ button:hover {
 /* Centraliza TODOS os botões principais */
 #iniciarAlmoco,
 #finalizarDia,
-#fecharAgora,
-#voltarDoAlmoco {
+#fecharAgora{
     display: block;
     margin: 20px auto;
     width: 200px; /* Largura fixa para uniformidade */
     padding: 12px;
     text-align: center;
 }
+/* Estilo padrão do botão (cinza/desativado) */
+#voltarDoAlmoco {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
 
+/* Estilo quando ativo (azul) */
+#voltarDoAlmoco.ativo {
+    background-color: #007bff; /* Azul */
+    cursor: pointer;
+}
 /* Estilo específico para o container do Pré-Almoço e Pré-Saída */
 #telaPreAlmoco .card,
 #telaPreSaida .card {

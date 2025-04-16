@@ -28,9 +28,9 @@ class App:
     def iniciar_lembretes(self):
         while True:
             agora = datetime.now()
-            if agora.minute % 2 == 0 and agora.second == 0:
+            if agora.minute % 3 == 0 and agora.second == 0:
                 self.notificar("Hora de beber água! 🚰 Mantenha-se hidratado!")
-            if agora.minute  % 1 == 0 and agora.second == 0:
+            elif (agora.minute - 1) % 5 == 0 and agora.second == 0:
                 self.notificar("Hora de alongar! 💪 Faça uma pausa para se exercitar!")
             time.sleep(1)
 
