@@ -158,6 +158,10 @@ function salvarHorarioAlmoco() {
         alert("O horário de início do almoço não pode ser menor ou igual à hora atual.");
         return; // Impede a continuação da função
     }
+    if (duracao < 1 || duracao > 480) {
+        alert("Duração inválida! Use entre 1 e 480 minutos (8 horas).");
+        return; // Impede a continuação
+    }
     // Verifica se já faltam ≤5 minutos
     const tempoRestante = horarioInicioAlmoco.getTime() - agora.getTime();
     const minutosRestantes = Math.floor(tempoRestante / (1000 * 60));
@@ -233,17 +237,14 @@ function iniciarCronometroAlmoco() {
 // Função para atualizar o cronômetro do almoço
 function atualizarCronometroAlmoco() {
     const agora = new Date();
-    const tempoRestante = horarioInicioAlmoco.getTime() + duracaoAlmoco - agora.getTime();
-    const voltarBtn = document.getElementById('voltarDoAlmoco');
+    const tempoRestante = (horarioInicioAlmoco.getTime() + duracaoAlmoco) - agora.getTime();
 
+    // Verifica se o tempo é negativo (já passou)
     if (tempoRestante <= 0) {
         clearInterval(intervaloAlmoco);
         document.getElementById('tempoRestante').textContent = "00:00";
-        
-        // Habilita o botão e aplica o estilo azul
         voltarBtn.disabled = false;
-        voltarBtn.classList.add('ativo'); // <- Adiciona a classe "ativo"
-
+        voltarBtn.classList.add('ativo');
         if (!notificacaoAlmocoTerminadoExibida) {
             window.pywebview.api.notificar("Horário de almoço terminado!");
             notificacaoAlmocoTerminadoExibida = true;
@@ -251,16 +252,13 @@ function atualizarCronometroAlmoco() {
         return;
     }
 
-    // Mantém o botão desativado e cinza enquanto o tempo não zerar
-    voltarBtn.disabled = true;
-    voltarBtn.classList.remove('ativo'); // <- Remove a classe "ativo"
-
-    // Atualiza o cronômetro
-    const minutos = Math.floor((tempoRestante % (1000 * 60 * 60)) / (1000 * 60));
+    // Cálculo dos minutos e segundos
+    const minutos = Math.floor(tempoRestante / (1000 * 60));
     const segundos = Math.floor((tempoRestante % (1000 * 60)) / 1000);
-    document.getElementById('tempoRestante').textContent =
+    document.getElementById('tempoRestante').textContent = 
         `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
 }
+
 // Variáveis globais para o cronômetro de saída
 let horarioSaida;
 let intervaloSaida;
