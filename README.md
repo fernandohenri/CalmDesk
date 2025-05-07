@@ -43,6 +43,7 @@ cd CalmDesk
 git checkout tags/v2.0
 pip install -r requirements.txt
 python src/main.py
+```
 
 # Para usuários:
 Disponível para download em:  
