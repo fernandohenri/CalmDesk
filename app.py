@@ -26,12 +26,22 @@ class App:
             print(f"Erro ao exibir notificação: {e}")
 
     def iniciar_lembretes(self):
+        tempo_inicio = time.time()  # Marca o momento de início
         while True:
-            agora = datetime.now()
-            if agora.minute % 3 == 0 and agora.second == 0:
-                self.notificar("Hora de beber água! 🚰 Mantenha-se hidratado!")
-            elif (agora.minute - 1) % 5 == 0 and agora.second == 0:
-                self.notificar("Hora de alongar! 💪 Faça uma pausa para se exercitar!")
+            # Calcula o tempo decorrido em segundos desde o início
+            tempo_decorrido = time.time() - tempo_inicio  
+            
+            # Converte para minutos
+            minutos_decorridos = int(tempo_decorrido / 60)
+            
+            # Água - a cada 60 minutos
+            if minutos_decorridos % 60 == 0 and int(tempo_decorrido) % 60 == 0:
+                self.notificar("Hora de beber água! 🚰")
+            
+            # Alongamento - a cada 90 minutos
+            elif minutos_decorridos % 90 == 0 and int(tempo_decorrido) % 60 == 0 and minutos_decorridos != 0:
+                self.notificar("Hora de alongar! 💪")
+            
             time.sleep(1)
 
     def minimizar_para_bandeja(self):

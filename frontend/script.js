@@ -224,6 +224,8 @@ function iniciarCronometroAlmoco() {
     // 3. Mostra a tela do cronômetro
     document.getElementById('telaPreAlmoco').classList.remove('show');
     document.getElementById('telaCronometroAlmoco').style.display = 'block';
+    document.getElementById('voltarDoAlmoco').disabled = true;
+    document.getElementById('voltarDoAlmoco').classList.remove('ativo');
     
     setTimeout(() => {
         document.getElementById('telaCronometroAlmoco').classList.add('show');
@@ -238,13 +240,16 @@ function iniciarCronometroAlmoco() {
 function atualizarCronometroAlmoco() {
     const agora = new Date();
     const tempoRestante = (horarioInicioAlmoco.getTime() + duracaoAlmoco) - agora.getTime();
+    const voltarBtn = document.getElementById('voltarDoAlmoco'); // Adiciona esta linha
 
-    // Verifica se o tempo é negativo (já passou)
     if (tempoRestante <= 0) {
         clearInterval(intervaloAlmoco);
         document.getElementById('tempoRestante').textContent = "00:00";
+        
+        // Habilita o botão e aplica o estilo
         voltarBtn.disabled = false;
-        voltarBtn.classList.add('ativo');
+        voltarBtn.classList.add('ativo'); // Adiciona classe CSS para feedback visual
+        
         if (!notificacaoAlmocoTerminadoExibida) {
             window.pywebview.api.notificar("Horário de almoço terminado!");
             notificacaoAlmocoTerminadoExibida = true;

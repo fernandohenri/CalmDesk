@@ -417,3 +417,13 @@ button:hover {
     align-items: center;
     gap: 20px; /* Espaço entre elementos */
 }
+
+#voltarDoAlmoco.ativo {
+    background-color: #4CAF50; /* Verde */
+    cursor: pointer;
+}
+
+#voltarDoAlmoco:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
