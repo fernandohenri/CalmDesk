@@ -31,12 +31,26 @@ O CalmDesk é uma aplicação desktop desenvolvida em Python que promove o bem-e
 - Pystray (integração com bandeja do sistema)
 - Plyer (notificações multiplataforma)
 
-## 📥 Download e Instalação
+## 📄 Documentação Completa
+Acesse o artigo detalhado em:  
+[DOCUMENTACAO.pdf](/DOCUMENTACAO.pdf)  
+
+### 🚀 Instalação e Uso
+```bash
+# Para desenvolvedores:
+git clone https://github.com/fernandohenri/CalmDesk.git
+cd CalmDesk
+git checkout tags/v2.0
+pip install -r requirements.txt
+python src/main.py
+
+# Para usuários:
 Disponível para download em:  
 [Google Drive](https://drive.google.com/file/d/16W8yJg_2eRuuGGU6Fjjq2tONtJbY5jyQ/view?usp=drive_link)
 
+
 **Requisitos do sistema:**
-- Windows, macOS ou Linux
+- Windows
 - Mínimo 4GB de RAM
 - 200MB de espaço livre em disco
 
