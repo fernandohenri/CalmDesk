@@ -47,7 +47,7 @@ python src/main.py
 
 # Para usuários:
 Disponível para download em:  
-[Google Drive](https://drive.google.com/file/d/16W8yJg_2eRuuGGU6Fjjq2tONtJbY5jyQ/view?usp=drive_link)
+[Google Drive](https://drive.google.com/file/d/1iRSUVhdEC_BSSD-ozC3dGCjzEbqb6UWi/view?usp=drivesdk)
 
 
 **Requisitos do sistema:**
